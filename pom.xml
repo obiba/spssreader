@@ -3,7 +3,7 @@
   <groupId>org.opendatafoundation</groupId>
   <artifactId>spssreader</artifactId>
   <packaging>jar</packaging>
-  <version>1.2.2-SNAPSHOT</version>
+  <version>1.2-SNAPSHOT</version>
   <name>spssreader</name>
   <url>http://maven.apache.org</url>
 
@@ -13,15 +13,13 @@
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
 
     <junit.version>4.12</junit.version>
+
+    <!-- maven plugins -->
+    <bintray-maven-plugin.version>1.2.20180117184439</bintray-maven-plugin.version>
     <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+    <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
   </properties>
 
-  <scm>
-    <connection>scm:git:git://github.com/obiba/spssreader.git</connection>
-    <developerConnection>scm:git:https://github.com/obiba/spssreader.git</developerConnection>
-    <url>https://github.com/obiba/spssreader</url>
-    <tag>HEAD</tag>
-  </scm>
   <build>
     <plugins>
       <plugin>
@@ -43,4 +41,65 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <distributionManagement>
+    <repository>
+      <id>obiba-bintray</id>
+      <url>https://api.bintray.com/obiba/maven/</url>
+    </repository>
+    <snapshotRepository>
+      <id>obiba-artifactory</id>
+      <url>https://obiba.jfrog.io/obiba/libs-snapshot</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <scm>
+    <connection>scm:git:git://github.com/obiba/spssreader.git</connection>
+    <developerConnection>scm:git:https://github.com/obiba/spssreader.git</developerConnection>
+    <url>https://github.com/obiba/spssreader</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <!-- Disable default deployer. -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <version>${maven-deploy-plugin.version}</version>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </plugin>
+
+          <!-- Enable alternative deployer. -->
+          <plugin>
+            <groupId>com.carrotgarden.maven</groupId>
+            <artifactId>bintray-maven-plugin</artifactId>
+            <version>${bintray-maven-plugin.version}</version>
+            <configuration>
+              <skip>false</skip>
+              <subject>obiba</subject>
+              <repository>maven</repository>
+              <serverId>obiba-bintray</serverId>
+              <packageVcsUrl>https://github.com/obiba/spssreader</packageVcsUrl>
+              <performCleanup>false</performCleanup>
+            </configuration>
+            <executions>
+              <!-- Activate "bintray:deploy" during "deploy" -->
+              <execution>
+                <goals>
+                  <goal>deploy</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
 </project>
