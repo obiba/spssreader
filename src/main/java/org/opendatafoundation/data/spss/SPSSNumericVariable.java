@@ -251,25 +251,42 @@ public class SPSSNumericVariable extends SPSSVariable {
   }
 
   /**
-   * Returns an observation value as a string based on the specified data ad variable format. The specified record number is used to determine which value is read. If a nthe observation umber is between 1 and the number of observation in the file is specifed and asusming the data has been loaded in memory, the relevant record number value is returned. If the observation number is 0, the variable value is retrned instead.
+   * Returns an observation value as double (raw)
    *
-   * @param obsNumber the record. Either 0 or between 1 and the nukber of observations
-   * @param dataFormat the file format
+   * @param obsNumber
+   * @return
    * @throws SPSSFileException
    */
-  public String getValueAsString(int obsNumber, FileFormatInfo dataFormat) throws SPSSFileException {
-    String strValue;
+  public double getValue(int obsNumber) throws SPSSFileException {
     double val;
 
     // check range
     if(obsNumber < 0 || obsNumber > data.size()) {
       throw new SPSSFileException(
-          "Invalid observation number [" + obsNumber + ". Range is 1 to " + data.size() + "] or 0.");
+              "Invalid observation number [" + obsNumber + ". Range is 1 to " + data.size() + "] or 0.");
     }
     // init value to convert
     if(obsNumber == 0) val = value;
     else if(obsNumber > 0 && data.size() == 0) throw new SPSSFileException("No data available");
     else val = data.get(obsNumber - 1);
+    
+    return val;
+  }
+  
+  /**
+   * Returns an observation value as a string based on the specified data ad variable format. The specified record
+   * number is used to determine which value is read. If a nth observation umber is between 1 and the number of
+   * observation in the file is specified and assuming the data has been loaded in memory, the relevant record number
+   * value is returned. If the observation number is 0, the variable value is returned instead.
+   *
+   * @param obsNumber the record. Either 0 or between 1 and the nukber of observations
+   * @param dataFormat the file format
+   * @throws SPSSFileException
+   */
+  @Override
+  public String getValueAsString(int obsNumber, FileFormatInfo dataFormat) throws SPSSFileException {
+    String strValue;
+    double val = getValue(obsNumber);
 
     // convert
     strValue = valueToString(val).trim();

@@ -45,6 +45,23 @@ public class SpssFileTest {
   }
 
   @Test
+  public void testRetrieveNumberValues() {
+    try {
+      SPSSFile spssFile = new SPSSFile(
+              new File("src/test/resources/org/opendatafoundation/data/spss/TestNumber.sav"));
+      spssFile.logFlag = false;
+      spssFile.loadMetadata();
+      spssFile.loadData();
+
+      SPSSNumericVariable variable = (SPSSNumericVariable)spssFile.getVariable(1);
+      double value = variable.getValue(8);
+      assertThat(value, is(11.12345));
+    } catch(Exception e) {
+      Assert.fail();
+    }
+  }
+
+  @Test
   public void testIntervalMissingValues() {
     try {
       SPSSFile spssFile = new SPSSFile(
